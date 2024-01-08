@@ -21,7 +21,7 @@ public class ProductService {
         List<Product> products = productRepository.findBySellingStatusIn(ProductSellingStatus.forDisplay());
 
         return products.stream()
-            .map(product -> ProductResponse.of(product))
+            .map(ProductResponse::of)
             .collect(Collectors.toList());
     }
 }

@@ -4,10 +4,13 @@ import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
 
 import demo.cafe.unit.beverage.Americano;
 import demo.cafe.unit.beverage.Latte;
+import demo.cafe.unit.order.Order;
 
 class CafeKioskTest {
 
@@ -75,5 +78,31 @@ class CafeKioskTest {
 
 		cafeKiosk.clear();
 		assertThat(cafeKiosk.getBeverages()).isEmpty();
+	}
+
+	@Test
+	void createOrder() {
+		CafeKiosk cafeKiosk = new CafeKiosk();
+		Americano americano = new Americano();
+
+		cafeKiosk.add(americano);
+
+		Order order = cafeKiosk.createOrder(LocalDateTime.of(2023, 11, 17, 10, 0));	// 오픈시간 경계값
+
+		assertThat(order.getBeverages()).hasSize(1);
+		assertThat(order.getBeverages().get(0).getName()).isEqualTo("아메리카노");
+	}
+
+	// 영업시간 외 주문 시 예외처리
+	@Test
+	void createOrderException() {
+		CafeKiosk cafeKiosk = new CafeKiosk();
+		Americano americano = new Americano();
+
+		cafeKiosk.add(americano);
+
+		assertThatThrownBy(() -> cafeKiosk.createOrder(LocalDateTime.of(2023, 11, 17, 22, 1)))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("주문 시간이 아닙니다. 관리자에게 문의하세요.");
 	}
 }
